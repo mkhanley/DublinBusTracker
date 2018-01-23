@@ -7,13 +7,17 @@ app.use(bodyParser.json());
 
 function getData(stopId, response){
     let url = 'http://rtpi.dublinbus.ie/DublinBusRTPIService.asmx?wsdl';
+    console.log(stopId);
     let args = {stopId: stopId};
     soap.createClient(url, function(err, client) {
         client.GetRealTimeStopData(args, function(err, result) {
             let res = result.GetRealTimeStopDataResult;
             if (res.diffgram){
                 let data = res.diffgram.DocumentElement.StopData;
-                let info = "";
+                let info = "The next buses are ";
+                if(data.length == 1){
+                    info = "The next bus is ";
+                }
                 for(let i = 0; i < data.length; i++){
                     let bus, num, dest, timeNow, timeArrival, diff;
                     bus = data[i];
@@ -22,7 +26,7 @@ function getData(stopId, response){
                     timeNow = Date.parse(bus.StopMonitoringDelivery_ResponseTimestamp);
                     timeArrival = Date.parse(bus.MonitoredCall_ExpectedArrivalTime);
                     diff = Math.floor((timeArrival - timeNow) / 1000 /60);
-                    info += num + " to " + dest + " in " + diff + " minutes" +"\n";
+                    info += num + " to " + dest + " in " + diff + " minutes," +"\n<break time=\"500ms\"/>";
                 }
                 console.log(info);
 
