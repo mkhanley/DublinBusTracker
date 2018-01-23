@@ -25,7 +25,14 @@ function getData(stopId, response){
                     info += num + " to " + dest + " in " + diff + " minutes" +"\n";
                 }
                 console.log(info);
-                response.send(info);
+
+                let body = {
+                    speech:info,
+                    displayText:info,
+                    source: "DublinBus API"
+                };
+                response.setHeader('Content-Type', 'application/json');
+                response.send(body);
             }
             else{
                 response.status(500).send("Could not find stop");
@@ -35,6 +42,7 @@ function getData(stopId, response){
 }
 
 app.post('/', (req, res) => {
+    console.log("Connection");
     if(req.body.result.parameters.number){
         getData(req.body.result.parameters.number, res);
     }

@@ -1,0 +1,27 @@
+{
+  "name": "dublinbustracker",
+  "version": "1.0.0",
+  "description": "Tracks dublin bus",
+  "main": "app.js",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "express": "^4.16.2",
+    "firebase-tools": "^3.17.3",
+    "node-soap": "^1.0.0",
+    "soap": "^0.23.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mkhanley/DublinBusTracker.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mkhanley/DublinBusTracker/issues"
+  },
+  "homepage": "https://github.com/mkhanley/DublinBusTracker#readme"
+}
