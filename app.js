@@ -5,6 +5,16 @@ let express = require('express');
 let app = express();
 app.use(bodyParser.json());
 
+function extractData(bus){
+    let num, dest, timeNow, timeArrival, diff;
+    num = bus.MonitoredVehicleJourney_PublishedLineName;
+    dest = bus.MonitoredVehicleJourney_DestinationName;
+    timeNow = Date.parse(bus.StopMonitoringDelivery_ResponseTimestamp);
+    timeArrival = Date.parse(bus.MonitoredCall_ExpectedArrivalTime);
+    diff = Math.floor((timeArrival - timeNow) / 1000 /60);
+    return num + " to " + dest + " in " + diff + " minutes," +"\n";
+}
+
 function getData(stopId, response){
     let url = 'http://rtpi.dublinbus.ie/DublinBusRTPIService.asmx?wsdl';
     console.log(stopId);
@@ -15,18 +25,14 @@ function getData(stopId, response){
             if (res.diffgram){
                 let data = res.diffgram.DocumentElement.StopData;
                 let info = "The next buses are ";
-                if(data.length == 1){
-                    info = "The next bus is ";
+                if(Array.isArray(data)){
+                    for(let i = 0; i < data.length; i++){
+                        info += extractData(data[i])
+                    }
                 }
-                for(let i = 0; i < data.length; i++){
-                    let bus, num, dest, timeNow, timeArrival, diff;
-                    bus = data[i];
-                    num = bus.MonitoredVehicleJourney_PublishedLineName;
-                    dest = bus.MonitoredVehicleJourney_DestinationName;
-                    timeNow = Date.parse(bus.StopMonitoringDelivery_ResponseTimestamp);
-                    timeArrival = Date.parse(bus.MonitoredCall_ExpectedArrivalTime);
-                    diff = Math.floor((timeArrival - timeNow) / 1000 /60);
-                    info += num + " to " + dest + " in " + diff + " minutes," +"\n<break time=\"500ms\"/>";
+                else{
+                    info = "The next bus is ";
+                    info += extractData(data)
                 }
                 console.log(info);
 
@@ -47,6 +53,7 @@ function getData(stopId, response){
 
 app.post('/', (req, res) => {
     console.log("Connection");
+    console.log(req);
     if(req.body.result.parameters.number){
         getData(req.body.result.parameters.number, res);
     }
